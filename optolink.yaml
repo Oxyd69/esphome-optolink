@@ -1,0 +1,447 @@
+esphome:
+  name: optolink
+  friendly_name: Optolink
+
+esp8266:
+  board: esp01_1m
+
+# Enable logging
+logger:
+  hardware_uart: UART0
+  baud_rate: 0 
+  level: DEBUG
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret encryption_key
+
+ota:
+  password: !secret password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  manual_ip:
+    static_ip: 192.168.178.200
+    gateway: 192.168.178.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Optolink Fallback Hotspot"
+    password: "change_me"
+
+captive_portal:
+
+external_components:
+  - source: github://pr#4453
+    components: [ optolink ]
+
+optolink:
+  protocol: P300             # P300 oder KW
+  #logger: enable             # wenn später alles rund läuft, wieder entfernen 
+  #state: Status              # wenn später alles rund läuft, wieder entfernen
+  device_info: 2033          # dient zur Identifizierung der Vitotronic 
+
+
+sensor:
+
+#   ----------------------
+#   Kessel
+#   ----------------------
+
+  - platform: optolink
+    name: KesselTemperatur
+    address: 0x0B12
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+
+  - platform: optolink
+    name: Kesselsoll Effektiv
+    address: 0x0B2F
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+
+  - platform: optolink
+    name: Kessel Leistung
+    address: 0x0B20
+    bytes: 1
+    unit_of_measurement: "%"
+    icon: mdi:poll
+
+  - platform: optolink
+    name: Brennstoffverbrauch [kg] 
+    address: 0x08B0 
+    accuracy_decimals: 1
+    bytes: 4
+    unit_of_measurement: kg
+    state_class: total_increasing
+    icon: mdi:weight-kilogram
+
+  - platform: optolink
+    name: Brennerstarts 
+    address: 0x08A3 
+    accuracy_decimals: 0
+    bytes: 4
+    icon: mdi:clock-start
+
+  - platform: optolink
+    name: Flammtemperatur
+    address: 0x0B14
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 0
+    unit_of_measurement: °C
+    device_class: temperature
+    icon: mdi:fire-circle
+
+  - platform: optolink
+    name: Drehzahl Gebläse Ist
+    address: 0x0B1E
+    bytes: 2
+    accuracy_decimals: 0
+    unit_of_measurement: Umdr.
+    icon: mdi:rotate-3d-variant
+
+  - platform: optolink
+    name: Drehzahl Gebläse Soll
+    address: 0x0B1C
+    bytes: 2
+    accuracy_decimals: 0
+    unit_of_measurement: Umdr.    
+    icon: mdi:rotate-3d-variant
+
+
+
+
+#   ----------------------
+#   Vorläufe
+#   ----------------------
+
+  - platform: optolink
+    name: Vorlauftemperatur Fussboden 
+    address: 0x2900 
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature    
+    
+  - platform: optolink
+    name: Vorlauftemperatur Fussboden Soll
+    address: 0x2544 
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature        
+
+  - platform: optolink
+    name: Vorlauftemperatur Badheizkörper
+    address: 0x3900 
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature    
+    
+  - platform: optolink
+    name: Vorlauftemperatur Badheizkörper Soll
+    address: 0x3544 
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature       
+    
+    
+    
+
+#   ----------------------
+#   Puffer 800l
+#   ----------------------
+
+  - platform: optolink
+    name: Puffertemperatur gedämpft oben
+    address: 0x0812
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+
+  - platform: optolink
+    name: Puffertemperatur gedämpft unten
+    address: 0x0810
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+    
+  - platform: optolink
+    name: Puffer Solltemperatur
+    address: 0x6600
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+   
+
+#   ----------------------
+#   WarmWasser 300l
+#   ----------------------
+
+  - platform: optolink
+    name: Warmwassertemperatur
+    address: 0x0814
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature    
+
+  - platform: optolink
+    name: Solar Speichertemperatur unten
+    address: 0x6566
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature  
+
+  - platform: optolink
+    name: Warmwassertemperatur Soll
+    address: 0x6500
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+
+#   ----------------------
+#   Solartermie
+#   ----------------------
+
+  - platform: optolink
+    name: Solar Kollektortemperatur
+    address: 0x6564
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature
+
+#   ----------------------
+#   Aussensensoren
+#   ----------------------
+
+  - platform: optolink
+    name: Aussentemperatur (Sensor 1)
+    address: 0x0800
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature 
+
+  - platform: optolink
+    name: Aussentemperatur (Sensor 2)
+    address: 0x5525
+    bytes: 2
+    div_ratio: 10
+    accuracy_decimals: 1
+    unit_of_measurement: °C
+    device_class: temperature 
+
+#   ----------------------
+#   Infos
+#   ----------------------
+
+  - platform: optolink
+    name: Solar Betriebsstunden test
+    address: 0x6568 
+    accuracy_decimals: 0
+    bytes: 2
+    icon: mdi:clock-start
+
+#   ----------------------
+#   Steuerrung
+#   ----------------------
+
+select:
+  - platform: optolink
+    name: Betriebsart Fussboden
+    address: 0x2323
+    bytes: 1
+    map:
+      - "0 -> Abschaltbetrieb"
+      - "1 -> Nur Warmwasser"
+      - "2 -> Heizen und WW"
+
+  - platform: optolink
+    name: Betriebsart Badheizkörper
+    address: 0x3323
+    bytes: 1
+    map:
+      - "0 -> Abschaltbetrieb"
+      - "1 -> Nur Warmwasser"
+      - "2 -> Heizen und WW"    
+
+
+#number:
+ # - platform: optolink
+ #   name: Korrekturfaktor Pelletverbrauch
+ #   address: 0x572F
+ #   bytes: 1
+ #   min_value: 70
+ #   max_value: 130
+ #   step: 1
+ #   mode: box
+
+
+
+#   ----------------------
+#   Fehlercodes (Textsensoren)
+#   ----------------------
+
+text_sensor:
+#   noch anpassen
+#   ----------------------
+  - platform: optolink
+    name: Meldecode test
+    address: 0x0B22
+    bytes: 1
+    raw: true
+    icon: mdi:alert-circle-outline
+    filters:
+      map:
+        - " -> Regelbetrieb (kein Fehler)"
+#   ----------------------
+#   ----------------------
+  - platform: optolink
+    name: Fehlerhistorie 1
+    address: 0x0B21 #0x7590
+    bytes: 1
+    raw: true
+    icon: mdi:alert-circle-outline
+    filters:
+      map:
+        - " -> Regelbetrieb (kein Fehler)"
+        - "0F -> Wartung (fuer Reset Codieradresse 24 auf 0 stellen)"
+        - "F1 -> Primärluftklappe defekt"
+        - "F4 -> Aschetür geöffnet"
+#   ----------------------
+
+  - platform: optolink
+    name: Prozessstatus
+    address: 0x0B11
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Ruhezustand"
+        - "1.000000 -> Anheizen"
+        - "2.000000 -> Regelbetrieb" 
+        - "4.000000 -> Ausbrandphase"
+    icon: mdi:fireplace
+        
+  - platform: optolink
+    name: Zirkulationspumpe
+    address: 0x0846
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump 
+
+  - platform: optolink
+    name: Speicherladepumpe
+    address: 0x0845
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump 
+
+  - platform: optolink
+    name: Warmwasserbereitung
+    address: 0x650A
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump 
+
+  - platform: optolink
+    name: Solarpumpe
+    address: 0x6552
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump 
+
+  - platform: optolink
+    name: Rücklaufanhebepumpe
+    address: 0x0844
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump 
+
+  - platform: optolink
+    name: Pelletförderung
+    address: 0x0B02
+    bytes: 1
+    filters:
+      map:
+        - "2.000000 -> Gesperrt"
+        - "3.000000 -> Freigabe"
+    icon: mdi:pine-tree-fire
+
+  - platform: optolink
+    name: Heizkreispumpe Fussboden
+    address: 0x2906
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump 
+
+  - platform: optolink
+    name: Heizkreispumpe Badheizkörper
+    address: 0x3906
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Aus"
+        - "1.000000 -> Ein"
+    icon: mdi:pump    
+
+
+switch:
+  - platform: optolink
+    name: Sparbetrieb
+    address: 0x2302
+    icon: mdi:sprout-outline
+    
+  - platform: optolink
+    name: Partybetrieb
+    address: 0x2303
+    icon: mdi:party-popper   
