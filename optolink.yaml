@@ -45,7 +45,6 @@ optolink:
   #state: Status              # wenn später alles rund läuft, wieder entfernen
   device_info: 2033          # dient zur Identifizierung der Vitotronic 
 
-
 sensor:
 
 #   ----------------------
@@ -268,11 +267,20 @@ sensor:
 #   ----------------------
 
   - platform: optolink
-    name: Solar Betriebsstunden test
+    name: Solar Betriebsstunden
     address: 0x6568 
     accuracy_decimals: 0
     bytes: 2
     icon: mdi:clock-start
+
+  - platform: optolink
+    name: Brenner Betriebsstunden
+    address: 0x08A7 
+    div_ratio: 3600
+    accuracy_decimals: 1
+    bytes: 4
+    icon: mdi:clock-start
+
 
 #   ----------------------
 #   Steuerrung
@@ -297,17 +305,111 @@ select:
       - "1 -> Nur Warmwasser"
       - "2 -> Heizen und WW"    
 
+number:
+  - platform: optolink
+    name: Raumtemperatur Partybetrieb
+    address: 0x2308
+    bytes: 1
+    min_value: 3
+    max_value: 35
+    step: 1
+    mode: box
+    icon: mdi:temperature-celsius
 
-#number:
- # - platform: optolink
- #   name: Korrekturfaktor Pelletverbrauch
- #   address: 0x572F
- #   bytes: 1
- #   min_value: 70
- #   max_value: 130
- #   step: 1
- #   mode: box
+  - platform: optolink
+    name: Warmwassertemperatur
+    address: 0x6500
+    bytes: 2
+    div_ratio: 10
+    min_value: 5
+    max_value: 60
+    step: 1
+    mode: box
+    icon: mdi:temperature-celsius
 
+  - platform: optolink
+    name: Raumtemperatur Normalbetrieb Fussboden
+    address: 0x2306
+    bytes: 1
+    min_value: 3
+    max_value: 35
+    step: 1
+    mode: box
+    icon: mdi:temperature-celsius
+
+  - platform: optolink
+    name: Raumtemperatur Reduziert Fussboden
+    address: 0x2307
+    bytes: 1
+    min_value: 3
+    max_value: 35
+    step: 1
+    mode: box
+    icon: mdi:temperature-celsius
+
+  - platform: optolink
+    name: Raumtemperatur Normalbetrieb Badheizkörper
+    address: 0x3306
+    bytes: 1
+    min_value: 3
+    max_value: 35
+    step: 1
+    mode: box
+    icon: mdi:temperature-celsius
+
+  - platform: optolink
+    name: Raumtemperatur Reduziert Badheizkörper
+    address: 0x3307
+    bytes: 1
+    min_value: 3
+    max_value: 35
+    step: 1
+    mode: box
+    icon: mdi:temperature-celsius
+
+  - platform: optolink
+    name: Neigung der Heizkennlinie Fussboden
+    address: 0x2305
+    div_ratio: 10
+    bytes: 1
+    min_value: 0.2
+    max_value: 3.5
+    step: 0.1
+    mode: box
+    icon: mdi:chart-bell-curve-cumulative
+
+  - platform: optolink
+    name: Neigung der Heizkennlinie Badheizkörper
+    address: 0x3305
+    div_ratio: 10
+    bytes: 1
+    min_value: 0.2
+    max_value: 3.5
+    step: 0.1
+    mode: box
+    icon: mdi:chart-bell-curve-cumulative
+
+  - platform: optolink
+    name: Niveau der Heizkennlinie Fussboden
+    address: 0x2304
+    bytes: 1
+    div_ratio: 1
+    min_value: 0
+    max_value: 40
+    step: 1
+    mode: box
+    icon: mdi:chart-bell-curve-cumulative
+    
+  - platform: optolink
+    name: Niveau der Heizkennlinie Badheizkörper
+    address: 0x3304
+    bytes: 1
+    div_ratio: 1
+    min_value: 0
+    max_value: 40
+    step: 1
+    mode: box
+    icon: mdi:chart-bell-curve-cumulative
 
 
 #   ----------------------
@@ -327,6 +429,17 @@ text_sensor:
       map:
         - " -> Regelbetrieb (kein Fehler)"
 #   ----------------------
+
+  - platform: optolink
+    name: Gerätekennung
+    address: 0x00F8 
+    bytes: 1
+    raw: false
+    icon: mdi:cogs
+    filters:
+      map:
+        - "32.000000 -> VBC550P - Vitotronic 200 (FO1)"
+
 #   ----------------------
   - platform: optolink
     name: Fehlerhistorie 1
@@ -354,6 +467,31 @@ text_sensor:
         - "4.000000 -> Ausbrandphase"
     icon: mdi:fireplace
         
+  - platform: optolink
+    name: Aktuelle Betriebsart Fussboden
+    address: 0x2500
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Abschaltbetrieb"
+        - "1.000000 -> Reduzierter Betrieb"
+        - "2.000000 -> Normalbetrieb" 
+        - "3.000000 -> Dauernd Normalbetrieb"
+    icon: mdi:fireplace
+        
+  - platform: optolink
+    name: Aktuelle Betriebsart Badheizkörper
+    address: 0x3500
+    bytes: 1
+    filters:
+      map:
+        - "0.000000 -> Abschaltbetrieb"
+        - "1.000000 -> Reduzierter Betrieb"
+        - "2.000000 -> Normalbetrieb" 
+        - "3.000000 -> Dauernd Normalbetrieb"
+    icon: mdi:fireplace
+                
+
   - platform: optolink
     name: Zirkulationspumpe
     address: 0x0846
@@ -438,10 +576,10 @@ text_sensor:
 switch:
   - platform: optolink
     name: Sparbetrieb
-    address: 0x2302
+    address: 0x2331
     icon: mdi:sprout-outline
     
   - platform: optolink
     name: Partybetrieb
-    address: 0x2303
+    address: 0x2330
     icon: mdi:party-popper   
